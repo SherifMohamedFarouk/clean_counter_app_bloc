@@ -1,4 +1,6 @@
+import 'package:clean_counter_app_bloc/cubit/counter_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -31,17 +33,57 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            BlocBuilder<CounterCubit, CounterState>(builder: (context, state) {
+              if(state is CounterChangingState){
+                return Text(
+                  state.counter.toString(),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headlineMedium,
+                );
+              }else if(state is CounterInitial){
+                return Text(
+                  '0',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headlineMedium,
+                );
+              }else{
+                return SizedBox();
+              }
+            })
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: (){
+              BlocProvider.of<CounterCubit>(context).addCounter();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              BlocProvider.of<CounterCubit>(context).restCounter();
+            },
+            child: const Icon(Icons.exposure_zero),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              BlocProvider.of<CounterCubit>(context).minusCounter();
+            },
+            child: const Icon(Icons.remove),
+          ),
+        ],
       ),
     );
   }
